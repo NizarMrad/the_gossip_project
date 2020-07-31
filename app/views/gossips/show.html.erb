@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Vive moi</title>
+  </head>
+  <body>
+    <% if flash[:danger] %>
+  <div class="alert alert-danger" role="alert">
+    <%= flash[:danger] %>
+  </div>
+<% end %>
+
+    <h1>Du potin, du potin, du potiiiin</h1>
+
+    <h3><b> <%= @gossip.title %> </b></h3>
+        <p> 👅 <%= @gossip.content %> </p>
+        <p> 🗓 Date de création : <%= @gossip.created_at %> </p>
+        <p> 💩 Ce doss' a été lâché par <b><%= @gossip.user.first_name %> <%= @gossip.user.last_name %></b> (t'as cru qu'on allait garder ça anonyme)</p>
+        <p>
+          <% if logged_in? == true %>
+            <% if @gossip.likes.where(user_id: current_user.id).count > 0 %>
+            <%= link_to "👎", like_path(:id=> @gossip.likes.sample), class:"btn btn-danger btn-sm", role:"button", data: {:method => "delete"} %>
+            <% else %>
+            <%= link_to "👍", likes_path(:gossip_id=> @gossip.id), class:"btn btn-info btn-sm", role:"button", data: {:method => "create"} %>
+          <% end %>
+          <% end %>
+          <span style="font-size:14px;">Likes :<%= @gossip.likes.count %></span>
+        </p>
+        <p>
+        <%= link_to "Voir l'auteur", user_path(:id => @gossip.user.id), class:"btn btn-primary btn-sm", role:"button" %>
+        <%= link_to "Voir la ville", city_path(:id => @gossip.user.city.id), class:"btn btn-primary btn-sm", role:"button" %>
+        </p>
+        <% if current_user.id == @gossip.user.id %>
+        <p>
+        <%= link_to "Modifier le potin", edit_gossip_path(:id => @gossip.id), class:"btn btn-warning btn-sm", role:"button" %>
+        <%= link_to "Supprimer", @gossip, method: :delete, class:"btn btn-danger btn-sm", role:"button" %>
+        </p>
+        <% end %>
+
+        <div class="formulaire">
+        <p>
+          <%= form_tag url_for(controller: :comments, action: :create, id: params[:id], gossip_id: params[:id]), method: "post" do %>
+          <b><%= label_tag 'Continuer le commérage 👇' %></b> <br>
+          <%= text_field_tag 'content'%>
+          <%= submit_tag 'Commenter 😈', class:"btn btn-outline-dark btn-sm"%>
+          <% end %>
+        </p>
+        </div>
+
+        <p><b>Derniers commentaires</b></p>
+
+        <% @gossip.comments.each do |comment| %>
+          <p style="font-size:14px;"> <b><%= comment.user.first_name %></b> <br>
+            <%= comment.content %> </p>
+        <% end %>
+
+  </body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Vive moi</title>
+  </head>
+  <body>
+
+    <h1> Bienvenue dans la charmante ville de <b><%= @city.name %></b> </h1>
+
+    <p>Voilà tous les potins du coin (tu ne verras plus jamais ton voisin du même oeil) :</p>
+
+    <% @city.gossips.each do |gossip| %>
+      <p>
+        👉 <b><%= gossip.title %></b><br/>
+        🙊 par <b><%= gossip.user.first_name %> <%= gossip.user.last_name %></b><br/>
+      </p>
+
+      <p>
+        <%= link_to "Voir le potin", gossip_path(:id => gossip.id), class:"btn btn-primary btn-sm", role:"button" %>
+        <%= link_to "Voir l'auteur", user_path(:id => gossip.user.id), class:"btn btn-primary btn-sm", role:"button" %>
+          <% if gossip.likes.where(user_id: current_user.id).count > 0 %>
+          <%= link_to "👎", like_path(:id=> gossip.likes.sample), class:"btn btn-danger btn-sm", role:"button", data: {:method => "delete"} %>
+          <% else %>
+          <%= link_to "👍", likes_path(:gossip_id=> gossip.id), class:"btn btn-info btn-sm", role:"button", data: {:method => "create"} %>
+        <% end %>
+        <span style="font-size:14px;">Likes :<%= gossip.likes.count %></span>
+      </p>
+
+    <% end %>
+
+  </body>
+</html>
